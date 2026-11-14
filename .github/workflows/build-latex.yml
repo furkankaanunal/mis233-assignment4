@@ -15,7 +15,7 @@ jobs:
       - name: Install document build tools
         run: |
           sudo apt-get update -qq
-          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends pandoc texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends pandoc lmodern texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
       - name: Generate complete LaTeX source from README
         run: |
           mkdir -p latex
