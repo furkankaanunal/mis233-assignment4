@@ -1,0 +1,1020 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+\documentclass[
+  10pt,
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=0.83in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{listings}
+\newcommand{\passthrough}[1]{#1}
+\lstset{defaultdialect=[5.3]Lua}
+\lstset{defaultdialect=[x86masm]Assembler}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  colorlinks=true,
+  linkcolor={Maroon},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={Blue},
+  pdfcreator={LaTeX via pandoc}}
+
+\author{}
+\date{}
+
+\begin{document}
+
+{
+\hypersetup{linkcolor=}
+\setcounter{tocdepth}{3}
+\tableofcontents
+}
+\section{Destructuring Field Guide}\label{destructuring-field-guide}
+
+\textbf{Name:} Furkan Kaan Ünal\\
+\textbf{Student number:} 2024502225\\
+\textbf{Course:} MIS 233 --- Web Based Application Programming, Fall
+2026\\
+\textbf{Project basis:} the provided Assignment 4 starter
+
+\subsection{Run and reproducibility}\label{run-and-reproducibility}
+
+\begin{lstlisting}[language=bash]
+npm install
+npm run all > output.txt
+npm run check
+node js/depth.mjs
+\end{lstlisting}
+
+This guide uses a course registration and event-room scheduling dataset.
+Each of the twelve forms is implemented in JavaScript and TypeScript.
+The supplied TypeScript configuration enables
+\passthrough{\lstinline!strict!} and
+\passthrough{\lstinline!noUncheckedIndexedAccess!}.
+\passthrough{\lstinline!@ts-expect-error!} is used only for the
+intentional failure in T5; P7 invalid examples are shown as comments.
+
+\textbf{Verification note (14 November 2026):} The complete assignment
+was independently run on GitHub Actions using Node.js 22, the actual npm
+dependencies, React 19 and TypeScript.
+\passthrough{\lstinline!npm install --no-audit --no-fund!},
+\passthrough{\lstinline!npm run all!},
+\passthrough{\lstinline!npm run check!} and
+\passthrough{\lstinline!node js/depth.mjs!} all passed. The full
+captured output is committed in \passthrough{\lstinline!output.txt!},
+including both JavaScript and TypeScript React rendering. Earlier local
+npm installation attempts were blocked by DNS; this was resolved by
+using a genuine CI runner.
+\href{https://github.com/furkankaanunal/mis233-assignment4/actions/runs/43533531180}{Successful
+verification run}.
+
+\textbf{Bonuses claimed:} Bonus 1: LaTeX; Bonus 2: Depth; Bonus 3: Real
+code; Bonus 4: Git repository
+(\href{https://github.com/furkankaanunal/mis233-assignment4}{published
+source}, verified tests).
+
+\subsection{Field guide: the twelve
+forms}\label{field-guide-the-twelve-forms}
+
+An \emph{array pattern} consumes iterator values in order, while an
+\emph{object pattern} requests properties by name. In both cases, the
+right-hand expression is evaluated before individual bindings receive
+their values. A \emph{rest pattern}
+(\passthrough{\lstinline!...remaining!}) \textbf{collects} values,
+whereas a \emph{spread expression} (\passthrough{\lstinline!...values!})
+\textbf{expands} them.
+
+\subsubsection{Form 1: Array return by
+position}\label{form-1-array-return-by-position}
+
+\textbf{Syntax:}
+\passthrough{\lstinline!const [min, max] = examRange(scores)!}
+
+\textbf{Example} (\passthrough{\lstinline!js/arrays.mjs!}; reduced to
+the relevant lines):
+
+\begin{lstlisting}
+function examRange(scores) { return [Math.min(...scores), Math.max(...scores)] }
+const [minimum, maximum] = examRange([62, 91, 74])
+console.log('F1:', minimum, maximum)
+\end{lstlisting}
+
+\textbf{Output (captured from the JS run):}
+
+\begin{lstlisting}
+F1: 62 91
+\end{lstlisting}
+
+\textbf{Use it when:} A function returns two values with a fixed
+positional meaning.
+
+\textbf{Watch out:} Swapping the order changes the meaning; the return
+should be a tuple in TypeScript.
+
+\textbf{Plain assignments equivalent:} Read the corresponding array
+positions in order. This is a convenient mental model, not a substitute
+for iterator side effects or default-evaluation timing.
+
+\subsubsection{Form 2: Skip and collect
+rest}\label{form-2-skip-and-collect-rest}
+
+\textbf{Syntax:}
+\passthrough{\lstinline!const [, second, ...remaining] = agenda!}
+
+\textbf{Example} (\passthrough{\lstinline!js/arrays.mjs!}; reduced to
+the relevant lines):
+
+\begin{lstlisting}
+const agenda = ['registration', 'workshop', 'networking', 'closing']
+const [, second, ...remaining] = agenda
+console.log('F2:', second, remaining)
+\end{lstlisting}
+
+\textbf{Output (captured from the JS run):}
+
+\begin{lstlisting}
+F2: workshop [ 'networking', 'closing' ]
+\end{lstlisting}
+
+\textbf{Use it when:} The first array element is irrelevant but the rest
+must be retained.
+
+\textbf{Watch out:} The hole skips one iterator value; rest must come
+last. Rest is collecting, not spread.
+
+\textbf{Plain assignments equivalent:} Read the corresponding array
+positions in order. This is a convenient mental model, not a substitute
+for iterator side effects or default-evaluation timing.
+
+\subsubsection{Form 3: Swap with
+assignment}\label{form-3-swap-with-assignment}
+
+\textbf{Syntax:} \passthrough{\lstinline![a, b] = [b, a]!}
+
+\textbf{Example} (\passthrough{\lstinline!js/arrays.mjs!}; reduced to
+the relevant lines):
+
+\begin{lstlisting}
+let morningRoom = 'B101', afternoonRoom = 'B202'
+;[morningRoom, afternoonRoom] = [afternoonRoom, morningRoom]
+console.log('F3:', morningRoom, afternoonRoom)
+\end{lstlisting}
+
+\textbf{Output (captured from the JS run):}
+
+\begin{lstlisting}
+F3: B202 B101
+\end{lstlisting}
+
+\textbf{Use it when:} Two existing variables must exchange values
+without a temporary name.
+
+\textbf{Watch out:} Use assignment, not \passthrough{\lstinline!const!};
+both right-hand values are evaluated before either target is assigned.
+
+\textbf{Plain assignments equivalent:} Read the corresponding array
+positions in order. This is a convenient mental model, not a substitute
+for iterator side effects or default-evaluation timing.
+
+\subsubsection{Form 4: Array defaults}\label{form-4-array-defaults}
+
+\textbf{Syntax:} \passthrough{\lstinline!const [x = fallback] = source!}
+
+\textbf{Example} (\passthrough{\lstinline!js/arrays.mjs!}; reduced to
+the relevant lines):
+
+\begin{lstlisting}
+const [firstSeat = 'unassigned', secondSeat = 'unassigned'] = [undefined, 'A12']
+console.log('F4:', firstSeat, secondSeat)
+\end{lstlisting}
+
+\textbf{Output (captured from the JS run):}
+
+\begin{lstlisting}
+F4: unassigned A12
+\end{lstlisting}
+
+\textbf{Use it when:} Array data might omit a position or explicitly
+contain \passthrough{\lstinline!undefined!}.
+
+\textbf{Watch out:} A default does not replace
+\passthrough{\lstinline!null!}, \passthrough{\lstinline!false!}, or
+\passthrough{\lstinline!0!}.
+
+\textbf{Plain assignments equivalent:} Read the corresponding array
+positions in order. This is a convenient mental model, not a substitute
+for iterator side effects or default-evaluation timing.
+
+\subsubsection{Form 5: Object properties by
+name}\label{form-5-object-properties-by-name}
+
+\textbf{Syntax:}
+\passthrough{\lstinline!const \{ attendee, track \} = registration!}
+
+\textbf{Example} (\passthrough{\lstinline!js/objects.mjs!}; reduced to
+the relevant lines):
+
+\begin{lstlisting}
+const registration = { attendee: 'Deniz', track: 'web', price: 250 }
+const { attendee, track } = registration
+console.log('F5:', attendee, track)
+\end{lstlisting}
+
+\textbf{Output (captured from the JS run):}
+
+\begin{lstlisting}
+F5: Deniz web
+\end{lstlisting}
+
+\textbf{Use it when:} A record is best understood by named fields
+instead of positional indexes.
+
+\textbf{Watch out:} An absent field becomes
+\passthrough{\lstinline!undefined!}; destructuring
+\passthrough{\lstinline!null!} or \passthrough{\lstinline!undefined!} as
+the whole object throws.
+
+\textbf{Plain assignments equivalent:} Look up the corresponding object
+properties by name. This is a convenient mental model, not a substitute
+for iterator side effects or default-evaluation timing.
+
+\subsubsection{Form 6: Rename a
+property}\label{form-6-rename-a-property}
+
+\textbf{Syntax:}
+\passthrough{\lstinline!const \{ code: courseCode \} = registration!}
+
+\textbf{Example} (\passthrough{\lstinline!js/objects.mjs!}; reduced to
+the relevant lines):
+
+\begin{lstlisting}
+const registration = { code: 'MIS233' }
+const { code: courseCode } = registration
+console.log('F6:', courseCode)
+\end{lstlisting}
+
+\textbf{Output (captured from the JS run):}
+
+\begin{lstlisting}
+F6: MIS233
+\end{lstlisting}
+
+\textbf{Use it when:} An object field needs a more descriptive local
+variable name.
+
+\textbf{Watch out:} \passthrough{\lstinline!code!} does not become a new
+local variable: \passthrough{\lstinline!courseCode!} is the binding.
+
+\textbf{Plain assignments equivalent:} Look up the corresponding object
+properties by name. This is a convenient mental model, not a substitute
+for iterator side effects or default-evaluation timing.
+
+\subsubsection{Form 7: Object default}\label{form-7-object-default}
+
+\textbf{Syntax:}
+\passthrough{\lstinline!const \{ currency = "TRY" \} = registration!}
+
+\textbf{Example} (\passthrough{\lstinline!js/objects.mjs!}; reduced to
+the relevant lines):
+
+\begin{lstlisting}
+const registration = { code: 'MIS233' }
+const { currency = 'TRY' } = registration
+console.log('F7:', currency)
+\end{lstlisting}
+
+\textbf{Output (captured from the JS run):}
+
+\begin{lstlisting}
+F7: TRY
+\end{lstlisting}
+
+\textbf{Use it when:} Optional configuration fields need a reasonable
+value.
+
+\textbf{Watch out:} The default activates only for an
+\passthrough{\lstinline!undefined!} property, never for
+\passthrough{\lstinline!null!}.
+
+\textbf{Plain assignments equivalent:} Look up the corresponding object
+properties by name. This is a convenient mental model, not a substitute
+for iterator side effects or default-evaluation timing.
+
+\subsubsection{Form 8: Object rest}\label{form-8-object-rest}
+
+\textbf{Syntax:}
+\passthrough{\lstinline!const \{ code, ...details \} = registration!}
+
+\textbf{Example} (\passthrough{\lstinline!js/objects.mjs!}; reduced to
+the relevant lines):
+
+\begin{lstlisting}
+const registration = { code: 'MIS233', attendee: 'Deniz', track: 'web', seat: 'C4', price: 250 }
+const { code, ...details } = registration
+console.log('F8:', code, details)
+\end{lstlisting}
+
+\textbf{Output (captured from the JS run):}
+
+\begin{lstlisting}
+F8: MIS233 { attendee: 'Deniz', track: 'web', seat: 'C4', price: 250 }
+\end{lstlisting}
+
+\textbf{Use it when:} Some fields are handled separately and the
+remaining enumerable own properties are forwarded.
+
+\textbf{Watch out:} The rest object is shallow: nested objects still
+point at the same references.
+
+\textbf{Plain assignments equivalent:} Look up the corresponding object
+properties by name. This is a convenient mental model, not a substitute
+for iterator side effects or default-evaluation timing.
+
+\subsubsection{Form 9: Nested
+object/array}\label{form-9-nested-objectarray}
+
+\textbf{Syntax:}
+\passthrough{\lstinline!const \{ room: \{ floor \}, slots: [firstSlot] \} = timetable!}
+
+\textbf{Example} (\passthrough{\lstinline!js/objects.mjs!}; reduced to
+the relevant lines):
+
+\begin{lstlisting}
+const timetable = { room: { floor: 3 }, slots: ['09:00', '11:00'] }
+const { room: { floor }, slots: [firstSlot] } = timetable
+console.log('F9:', floor, firstSlot)
+\end{lstlisting}
+
+\textbf{Output (captured from the JS run):}
+
+\begin{lstlisting}
+F9: 3 09:00
+\end{lstlisting}
+
+\textbf{Use it when:} A response combines named object fields with
+ordered array data.
+
+\textbf{Watch out:} Missing \passthrough{\lstinline!room!} or
+\passthrough{\lstinline!slots!} causes an exception unless you provide
+suitable defaults; \passthrough{\lstinline!room!} is not bound as a
+variable.
+
+\textbf{Plain assignments equivalent:} Look up the corresponding object
+properties by name. This is a convenient mental model, not a substitute
+for iterator side effects or default-evaluation timing.
+
+\subsubsection{Form 10: Computed
+property}\label{form-10-computed-property}
+
+\textbf{Syntax:}
+\passthrough{\lstinline!const \{ [chosenField]: selectedValue \} = registration!}
+
+\textbf{Example} (\passthrough{\lstinline!js/objects.mjs!}; reduced to
+the relevant lines):
+
+\begin{lstlisting}
+const registration = { price: 250 }
+const chosenField = 'price'
+const { [chosenField]: selectedValue } = registration
+console.log('F10:', selectedValue)
+\end{lstlisting}
+
+\textbf{Output (captured from the JS run):}
+
+\begin{lstlisting}
+F10: 250
+\end{lstlisting}
+
+\textbf{Use it when:} The property selected depends on a previously
+computed key.
+
+\textbf{Watch out:} Square brackets evaluate the key expression; the
+resulting local name is \passthrough{\lstinline!selectedValue!}.
+
+\textbf{Plain assignments equivalent:} Look up the corresponding object
+properties by name. This is a convenient mental model, not a substitute
+for iterator side effects or default-evaluation timing.
+
+\subsubsection{Form 11: Parameter
+patterns}\label{form-11-parameter-patterns}
+
+\textbf{Syntax:}
+\passthrough{\lstinline!function badge(\{ attendee = "Guest" \} = \{\})!}
+
+\textbf{Example} (\passthrough{\lstinline!js/params.mjs!}; reduced to
+the relevant lines):
+
+\begin{lstlisting}
+function badge({ attendee = 'Guest', track = 'general' } = {}) { return `${attendee} / ${track}` }
+console.log('F11:', badge({ attendee: 'Deniz' }), '|', badge())
+\end{lstlisting}
+
+\textbf{Output (captured from the JS run):}
+
+\begin{lstlisting}
+F11: Deniz / general | Guest / general
+\end{lstlisting}
+
+\textbf{Use it when:} Callers supply an options object with optional
+properties.
+
+\textbf{Watch out:} The outer \passthrough{\lstinline!= \{\}!} handles
+an omitted argument; inner defaults handle missing fields. Neither
+repairs a literal null argument.
+
+\textbf{Plain assignments equivalent:} Bind the parameters or loop entry
+values one by one. This is a convenient mental model, not a substitute
+for iterator side effects or default-evaluation timing.
+
+\subsubsection{Form 12: Loop entry
+patterns}\label{form-12-loop-entry-patterns}
+
+\textbf{Syntax:}
+\passthrough{\lstinline!for (const [key, value] of Object.entries(record))!}
+
+\textbf{Example} (\passthrough{\lstinline!js/params.mjs!}; reduced to
+the relevant lines):
+
+\begin{lstlisting}
+const inventory = { pens: 12, folders: 3 }
+for (const [name, count] of Object.entries(inventory)) console.log('F12-object:', name, count)
+\end{lstlisting}
+
+\textbf{Output (captured from the JS run):}
+
+\begin{lstlisting}
+F12-object: pens 12
+F12-object: folders 3
+\end{lstlisting}
+
+\textbf{Use it when:} A loop needs both the key and the associated value
+of every entry.
+
+\textbf{Watch out:} \passthrough{\lstinline!for...of!} iterates entry
+arrays; \passthrough{\lstinline!for...in!} would iterate property names
+instead. Map iteration yields tuples too.
+
+\textbf{Plain assignments equivalent:} Bind the parameters or loop entry
+values one by one. This is a convenient mental model, not a substitute
+for iterator side effects or default-evaluation timing.
+
+\subsection{Five pitfalls: observed errors and
+explanations}\label{five-pitfalls-observed-errors-and-explanations}
+
+\subsubsection{Pitfall 1 --- Missing right-hand
+object}\label{pitfall-1-missing-right-hand-object}
+
+\passthrough{\lstinline!const \{id\} = undefined!} and
+\passthrough{\lstinline!const \{id\} = null!} throw before the property
+can be looked up. The captured Node errors are:
+
+\begin{lstlisting}
+Pitfall1: undefined TypeError Cannot destructure property 'id' of 'input' as it is undefined.
+Pitfall1: null TypeError Cannot destructure property 'id' of 'input' as it is null.
+\end{lstlisting}
+
+The fix is to check the object or use an outer parameter default when
+omission is valid. An inner property default alone does not help.
+
+\subsubsection{Pitfall 2 --- Undefined is not
+null}\label{pitfall-2-undefined-is-not-null}
+
+\passthrough{\lstinline!const \{a = 'fallback', b = 'fallback'\} = \{a: undefined, b: null\}!}
+prints \passthrough{\lstinline!Pitfall2: \{"a":"fallback","b":null\}!}.
+Only \passthrough{\lstinline!undefined!} triggers the binding default,
+so a deliberate null stays null.
+
+\subsubsection{Pitfall 3 --- Assignment versus
+block}\label{pitfall-3-assignment-versus-block}
+
+An existing binding can be reassigned with
+\passthrough{\lstinline!(\{room\} = \{room:'new'\})!}; this prints
+\passthrough{\lstinline!Pitfall3: new!}. Removing the parentheses leads
+to the observed
+\passthrough{\lstinline!Pitfall3-error: SyntaxError Unexpected token '='!}
+in the tested Function constructor. The parser reads an initial
+\passthrough{\lstinline!\{!} as a block, not an object assignment
+pattern.
+
+\subsubsection{Pitfall 4 --- No deep copy}\label{pitfall-4-no-deep-copy}
+
+After \passthrough{\lstinline!const \{ room: shared \} = original!},
+changing \passthrough{\lstinline!shared.floor!} also changes
+\passthrough{\lstinline!original.room.floor!}; the run prints
+\passthrough{\lstinline!Pitfall4: 5!}. Destructuring assigns the nested
+reference. Even \passthrough{\lstinline!\{...rest\}!} makes only a
+shallow copy.
+
+\subsubsection{Pitfall 5 --- Name versus
+position}\label{pitfall-5-name-versus-position}
+
+An object \passthrough{\lstinline!\{first:'A', second:'B'\}!} can be
+written as \passthrough{\lstinline!\{second, first\}!} without changing
+values; an array \passthrough{\lstinline![a,b]!} depends on order. The
+run prints \passthrough{\lstinline!Pitfall5: A B A B!}. Naming fields
+reduces accidental positional confusion.
+
+\subsection{TypeScript-specific lessons
+T1--T5}\label{typescript-specific-lessons-t1t5}
+
+\textbf{T1 --- Rename is not a type.} In
+\passthrough{\lstinline!const \{ building: campusBuilding \} = location!},
+the colon means \emph{rename}, not ``building has type campusBuilding''.
+Put the annotation after the whole pattern:
+\passthrough{\lstinline!const \{building\}: \{building: string\} = location!}.
+\passthrough{\lstinline!ts/types.ts!} illustrates this with a typed
+\passthrough{\lstinline!location!}.
+
+\textbf{T2 --- Tuple and \passthrough{\lstinline!as const!}.}
+\passthrough{\lstinline![number, string]!} guarantees that index 0 is a
+number and index 1 is a string.
+\passthrough{\lstinline![3, 'rooms'] as const!} gives a readonly tuple
+with literal types \passthrough{\lstinline!3!} and
+\passthrough{\lstinline!'rooms'!}, not a broadly mutable
+\passthrough{\lstinline!(string | number)[]!}.
+
+\textbf{T3 --- \passthrough{\lstinline!noUncheckedIndexedAccess!}.} If
+\passthrough{\lstinline!attendees: string[]!} could be empty,
+\passthrough{\lstinline!const [first] = attendees!} is
+\passthrough{\lstinline!string | undefined!}. The explicit
+\passthrough{\lstinline!first ?? 'no attendees'!} fallback makes empty
+inputs safe. A fixed nonempty tuple has a known first element.
+
+\textbf{T4 --- Optional field defaults.}
+\passthrough{\lstinline!language?: string!} usually yields
+\passthrough{\lstinline!string | undefined!}.
+\passthrough{\lstinline!const \{language = 'tr'\} = options!} yields a
+\passthrough{\lstinline!string!}. If
+\passthrough{\lstinline!display?: string | null!},
+\passthrough{\lstinline!display = 'standard'!} can still be
+\passthrough{\lstinline!null!}: the default does not remove null.
+
+\textbf{T5 --- A real type mismatch example.}
+\passthrough{\lstinline!const \{count: countAsText\}: \{count: string\} = \{count: 8\}!}
+causes
+\passthrough{\lstinline!TS2322: Type 'number' is not assignable to type 'string'.!}
+The marked \passthrough{\lstinline!@ts-expect-error!} line in
+\passthrough{\lstinline!ts/types.ts!} intentionally keeps the error
+visible to the compiler while allowing the project to check. The correct
+solution is to use \passthrough{\lstinline!\{count: number\}!} or
+\passthrough{\lstinline!String(count)!} after extracting it, not to lie
+about the type. The runtime still stores the number.
+
+\subsection{React props and children:
+P1--P7}\label{react-props-and-children-p1p7}
+
+\textbf{P1 --- One props object, two access styles.}
+\passthrough{\lstinline!CardA(props)!} accesses
+\passthrough{\lstinline!props.title!} and
+\passthrough{\lstinline!props.children!};
+\passthrough{\lstinline!CardB(\{title, children\})!} takes the same
+fields using form 5 in a function-parameter position (form 11). Both
+render
+\passthrough{\lstinline!<section><h2>Schedule</h2>Friday</section>!}.
+React does not pass \passthrough{\lstinline!title!} and
+\passthrough{\lstinline!children!} as separate positional arguments.
+
+\textbf{P2 --- Children is a prop.}
+\passthrough{\lstinline!<CardB title="Equivalent">text</CardB>!} and
+\passthrough{\lstinline!<CardB title="Equivalent" children="text" />!}
+have equivalent children values and render
+\passthrough{\lstinline!<section><h2>Equivalent</h2>text</section>!}. Do
+not supply both syntaxes together; nesting is clearer when the content
+is JSX.
+
+\textbf{P3 --- Child value categories.} Strings and numbers render as
+text; an element renders its markup; an array of elements renders them
+in sequence. \passthrough{\lstinline!undefined!},
+\passthrough{\lstinline!null!}, and \passthrough{\lstinline!false!}
+produce no visible content. A function is \textbf{not} itself a
+renderable ReactNode. The JS experiment deliberately passes a bare
+function to a host element to observe React's handling, while
+\passthrough{\lstinline!RenderCallback!} invokes a render-prop function
+and renders its returned node. TS defines a callback separately as
+\passthrough{\lstinline!(value: string) => ReactNode!}; it deliberately
+rejects a function assigned to \passthrough{\lstinline!ReactNode!}.
+
+\textbf{P4 --- Children versus rest.}
+\passthrough{\lstinline!(\{title, children, ...rest\})!} keeps two
+fields local and forwards remaining valid DOM props to
+\passthrough{\lstinline!<section \{...rest\}>!}. Spreading
+\passthrough{\lstinline!rest!} first and then setting
+\passthrough{\lstinline!data-role="explicit"!} produces the explicit
+value. Reversing that order lets the caller's
+\passthrough{\lstinline!data-role="incoming"!} win. Use this pattern
+carefully: forwarding arbitrary data to the DOM can leak unintended
+attributes.
+
+\textbf{P5 --- Named slots versus a single children flow.}
+\passthrough{\lstinline!Slots!} takes \passthrough{\lstinline!header!}
+and \passthrough{\lstinline!footer!} as named ReactNode props and
+\passthrough{\lstinline!children!} as body. This is preferable when
+layout positions need to be enforced independently.
+\passthrough{\lstinline!Flow!} uses children only, allowing the caller
+to control header/main/footer structure; this is simpler for highly
+flexible compositions but less constrained.
+
+\textbf{P6 --- Default value and null.}
+\passthrough{\lstinline!function Status(\{label = 'Pending'\})!}
+substitutes \passthrough{\lstinline!'Pending'!} when
+\passthrough{\lstinline!label!} is missing or undefined.
+\passthrough{\lstinline!null!} bypasses the destructuring default. The
+sample uses \passthrough{\lstinline!label ?? '(empty)'!} inside JSX to
+visibly distinguish the two cases:
+\passthrough{\lstinline!<span>Pending</span>!} versus
+\passthrough{\lstinline!<span>(empty)</span>!}.
+
+\textbf{P7 --- Types and rejected props.}
+\passthrough{\lstinline!children?: ReactNode!} permits an optional
+renderable child (but not a bare function).
+\passthrough{\lstinline!PropsWithChildren<\{title: string\}>!} adds
+optional children. \passthrough{\lstinline!ComponentProps<'button'>!}
+obtains built-in HTML button props including
+\passthrough{\lstinline!type!}, \passthrough{\lstinline!disabled!} and
+event handlers; it rejects \passthrough{\lstinline!href!}. The
+implementation uses \passthrough{\lstinline!ButtonProps!} with
+\passthrough{\lstinline!emphasis?!} to demonstrate combining a custom
+prop with standard attributes. Deliberate P7 errors are documented as
+commented-out examples, leaving T5 as the only
+\passthrough{\lstinline!@ts-expect-error!} suppression.
+
+\subsubsection{React static markup: real captured
+output}\label{react-static-markup-real-captured-output}
+
+These HTML lines were captured from a successful GitHub Actions run of
+the actual JS/TS components; see \passthrough{\lstinline!output.txt!}.
+
+\begin{lstlisting}[language=HTML]
+P1-A: <section><h2>Schedule</h2>Friday</section>
+P1-B: <section><h2>Schedule</h2>Friday</section>
+P2-nested: <section><h2>Equivalent</h2>text</section>
+P2-attribute: <section><h2>Equivalent</h2>text</section>
+P3-string: <div>hello</div>
+P3-number: <div>17</div>
+P3-element: <div><strong>bold</strong></div>
+P3-several: <div><em>one</em><em>two</em></div>
+P3-undefined: <div></div>
+P3-null: <div></div>
+P3-false: <div></div>
+P3-function-called: <div><strong>called</strong></div>
+P3-function-uninvoked: <div></div>
+P4-explicit-last: <section data-role="explicit" id="desk"><h3>Desk</h3>A</section>
+P4-spread-last: <section data-role="incoming" id="desk"><h3>Desk</h3>A</section>
+P5-slots: <article><header><b>Plan</b></header><main>Body</main><footer><small>End</small></footer></article>
+P5-flow: <article><header><b>Plan</b></header><main>Body</main><footer><small>End</small></footer></article>
+P6-undefined: <span>Pending</span>
+P6-null: <span>(empty)</span>
+P7-button: <button type="button" disabled="" class="primary">Save</button>
+\end{lstlisting}
+
+These are the React 19 server-rendered results from the verified
+workflow, not guessed markup.
+
+\subsection{JavaScript versus TypeScript (at least eight
+distinctions)}\label{javascript-versus-typescript-at-least-eight-distinctions}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Form/topic
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Same JavaScript behavior
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Added TS type information
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Mistake TS catches
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+1 & Position-based \passthrough{\lstinline![min,max]!} & Return tuple
+\passthrough{\lstinline![number,number]!} & Wrong tuple item type \\
+2 & Skip and collect rest & \passthrough{\lstinline!string[]!} item can
+be \passthrough{\lstinline!undefined!} & Calling
+\passthrough{\lstinline!.toUpperCase()!} on possibly missing item \\
+3 & Swap targets & Bindings must be assignable types & Swapping
+\passthrough{\lstinline!string!} and \passthrough{\lstinline!number!}
+variables \\
+4 & Defaults only on undefined &
+\passthrough{\lstinline!string \\| undefined!} source & Treating
+\passthrough{\lstinline!null!} as \passthrough{\lstinline!string!} \\
+5 & Extract properties by name & \passthrough{\lstinline!Registration!}
+interface/type & Accessing a property absent from type \\
+6 & Renaming with colon & Annotation goes after whole pattern &
+Accidentally treating rename as a type \\
+7 & Property fallback & Optional
+\passthrough{\lstinline!currency?: string!} & Using optional result as
+always defined \\
+8 & Collect remaining properties & Inferred
+\passthrough{\lstinline!Omit!}-like shape & Reading extracted
+\passthrough{\lstinline!code!} from \passthrough{\lstinline!details!} \\
+9 & Nested fields & Shape for \passthrough{\lstinline!room!} and tuple
+\passthrough{\lstinline!slots!} & Reading absent nested field \\
+10 & Computed key evaluated & Key constrained to
+\passthrough{\lstinline!keyof Registration!} & Unknown key used on typed
+object \\
+11 & Defaulted options & \passthrough{\lstinline!BadgeOptions!}
+parameter annotation & Invalid option value type \\
+12 & Iterate entry pairs & \passthrough{\lstinline!Map<string,number>!}
+& Treating a Map value as a string \\
+P7 & Children still a prop & \passthrough{\lstinline!ReactNode!},
+\passthrough{\lstinline!PropsWithChildren!},
+\passthrough{\lstinline!ComponentProps!} & Passing
+\passthrough{\lstinline!href!} to button or missing title \\
+\end{longtable}
+
+Some errors above are representative type mistakes rather than compiler
+diagnostics captured from this environment.
+
+\subsection{Bonus 1: LaTeX}\label{bonus-1-latex}
+
+The directory \passthrough{\lstinline!latex/!} contains the full guide
+as \passthrough{\lstinline!Destructuring\_Field\_Guide.tex!} and a
+generated PDF. The PDF is typeset from the same README content, with
+headings, a linked table of contents, real tables and syntax-preserving
+code listings. Build command:
+
+\begin{lstlisting}[language=bash]
+cd latex
+pdflatex -interaction=nonstopmode -halt-on-error Destructuring_Field_Guide.tex
+pdflatex -interaction=nonstopmode -halt-on-error Destructuring_Field_Guide.tex
+\end{lstlisting}
+
+\subsection{Bonus 2: Depth}\label{bonus-2-depth}
+
+The runnable extra experiments in \passthrough{\lstinline!js/depth.mjs!}
+cover: strings (D1), Set iteration with duplicate removal (D2),
+generator/iterator consumption (D3), lazy default evaluation (D4), using
+an earlier binding inside a later default (D5), destructuring an error
+in catch (D6), assignment to object properties (D7), Map entry iterators
+(D8), and shallow object rest (D9). Run
+\passthrough{\lstinline!node js/depth.mjs!}.
+
+\begin{lstlisting}
+D1-string: M I
+D2-set: web [ 'finance' ]
+D3-generator: A1 C3
+D4-lazy-default: given computed 1
+D5-earlier-binding: 3 6
+D6-catch: registration closed
+D7-target: { x: 5, y: 9 }
+D8-map-entry: East 4
+D9-shallow-rest: 7 9
+\end{lstlisting}
+
+\textbf{Why these happen:} an array pattern asks for an iterator, not
+necessarily an Array. A Set iterates its unique insertion-order values,
+while a generator produces items lazily. Skipped iterator positions can
+still advance an iterator. Default expressions execute only for
+\passthrough{\lstinline!undefined!}; consequently D4 calls
+\passthrough{\lstinline!fallback()!} once rather than twice. A later
+default can read an earlier initialized variable
+(\passthrough{\lstinline!doubled = base * 2!}), but not a later variable
+still inside its temporal dead zone. D6 destructures the thrown Error
+object. D7 shows destructuring assignment can target properties. D9
+proves an object rest copy is shallow.
+
+\textbf{Readability tradeoff:}
+\passthrough{\lstinline!const \{student:\{profile:\{address:\{city\}\}\}\} = record!}
+is compact but fragile when any intermediate value is absent. Extracting
+\passthrough{\lstinline!const city = record.student?.profile?.address?.city ?? 'unknown'!}
+explicitly handles incomplete data and makes the fallback visible. For
+short stable record shapes, destructuring remains clearer.
+
+\textbf{Type-level extension:} \passthrough{\lstinline!ts/types.ts!}
+defines \passthrough{\lstinline!First<T>!} and
+\passthrough{\lstinline!Tail<T>!} with conditional types and
+\passthrough{\lstinline!infer!} to extract tuple element types. This is
+about types at compilation, not runtime destructuring.
+
+\subsection{Bonus 3: Real code}\label{bonus-3-real-code}
+
+Five source-grounded cases follow, using the \textbf{original supplied
+starter} as real code written by someone else. Its line numbers are
+stable because an untouched copy of the starter was provided with the
+assignment. The external p-limit example is a sixth, additional case
+(upstream line numbers are revision-dependent).
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2000}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Case
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Original source, exact line
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Form
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Equivalent without destructuring
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Assessment
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+1 & Starter \passthrough{\lstinline!js/arrays.mjs:8!} & 1
+\passthrough{\lstinline![lowest, highest]!} &
+\passthrough{\lstinline!const pair=minMax([4,9,2]); const lowest=pair[0]; const highest=pair[1]!}
+& Clearly expresses a two-value return. \\
+2 & Starter \passthrough{\lstinline!js/objects.mjs:6!} & 5
+\passthrough{\lstinline!\{title,status\}!} &
+\passthrough{\lstinline!const title=task.title; const status=task.status!}
+& Short and readable because both properties are used. \\
+3 & Starter \passthrough{\lstinline!js/params.mjs:5!} & 11
+\passthrough{\lstinline!\{title,status='todo'\}=\{\}!} &
+\passthrough{\lstinline!function createTask(options=\{\}) \{const title=options.title; const status=options.status===undefined?'todo':options.status; ...\}!}
+& Makes the public configuration compact; nested defaults require
+explanation. \\
+4 & Starter \passthrough{\lstinline!js/props.jsx:10!} & 5 + 11
+\passthrough{\lstinline!CardB(\{title,children\})!} &
+\passthrough{\lstinline!function CardB(props)\{return <section><h2>\{props.title\}</h2>\{props.children\}</section>\}!}
+& React-specific example: \passthrough{\lstinline!title!} is a named
+attribute prop, \passthrough{\lstinline!children!} is the nested tag
+content, but both are properties of the same object. \\
+5 & Starter \passthrough{\lstinline!ts/props.tsx:9!} & 5 + 11
+\passthrough{\lstinline!Card(\{title,children\}:CardProps)!} &
+\passthrough{\lstinline!function Card(props: CardProps)\{return <section><h2>\{props.title\}</h2>\{props.children\}</section>\}!}
+& Shows that TypeScript annotates the \textbf{entire parameter pattern},
+not each renamed field. \\
+6 &
+\href{https://github.com/sindresorhus/p-limit/blob/main/index.js\#L7}{\passthrough{\lstinline!p-limit/index.js:7!}},
+options branch & 5 + 7
+\passthrough{\lstinline!(\{concurrency,rejectOnClear=false\}=concurrency)!}
+&
+\passthrough{\lstinline!const options=concurrency; concurrency=options.concurrency; rejectOnClear=options.rejectOnClear===undefined?false:options.rejectOnClear!}
+& \textbf{Readability concern:} the expression reassigns
+\passthrough{\lstinline!concurrency!} from an object to a number while
+destructuring it. A separate \passthrough{\lstinline!options!} variable
+would communicate intent more directly. The linked upstream source was
+checked on 14 November 2026. \\
+\end{longtable}
+
+A strong improvement would be to add cases from the Assignment 3 Task
+Manager and a locally installed library. Those sources were not supplied
+in this upload, so their exact source lines have not been invented.
+
+\subsection{Bonus 4: Git repository}\label{bonus-4-git-repository}
+
+Public repository:
+\textbf{https://github.com/furkankaanunal/mis233-assignment4}. The
+project source, \passthrough{\lstinline!package-lock.json!}, captured
+execution output, and strict TypeScript verification workflow are
+published. See the
+\href{https://github.com/furkankaanunal/mis233-assignment4/actions/runs/43533531180}{successful
+GitHub Actions run}. The \passthrough{\lstinline!.gitignore!} excludes
+\passthrough{\lstinline!node\_modules!}.
+
+A local six-commit development history is packaged in
+\passthrough{\lstinline!assignment4-history.bundle!} in the Moodle ZIP.
+The GitHub repository also contains a visible incremental commit
+history. Commits produced in one session were not falsely backdated to
+imitate work over several days. Instructor access follows the course's
+Moodle instructions.
+
+\subsection{My own log}\label{my-own-log}
+
+This section records verifiable tool-run outcomes, not invented personal
+study experiences. Add your own wrong guesses or reflections before
+submitting.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  The dependency install with
+  \passthrough{\lstinline!npm ci --offline --no-audit --no-fund!}
+  stopped with \passthrough{\lstinline!ENOTCACHED!} because the
+  requested \passthrough{\lstinline!undici-types-6.21.0.tgz!} was not
+  cached. \textbf{Learning:} lockfiles do not make an offline install
+  possible without cached packages.
+\item
+  An online \passthrough{\lstinline!npm ci --no-audit --no-fund!}
+  attempt timed out;
+  \passthrough{\lstinline!curl -I https://registry.npmjs.org/react!}
+  returned
+  \passthrough{\lstinline!curl: (6) Could not resolve host: registry.npmjs.org!}.
+  \textbf{Learning:} a partial \passthrough{\lstinline!node\_modules!}
+  directory does not mean the dependencies are installed.
+\item
+  The JS null/undefined test produced two different TypeError
+  descriptions. \textbf{Learning:} both fail as whole-object
+  destructuring inputs; a property-level fallback cannot help.
+\item
+  The deliberately malformed assignment raised
+  \passthrough{\lstinline!SyntaxError Unexpected token '='!}; wrapping
+  the expression in parentheses succeeded. \textbf{Learning:} the
+  grammar distinguishes statement blocks from destructuring assignments.
+\item
+  The shallow reference experiment produced
+  \passthrough{\lstinline!Pitfall4: 5!} after changing
+  \passthrough{\lstinline!shared.floor!}. \textbf{Learning:} extracting
+  nested objects does not deep-clone them.
+\item
+  The lazy default experiment produced a call counter of
+  \passthrough{\lstinline!1!} rather than \passthrough{\lstinline!2!}.
+  \textbf{Learning:} the fallback function executes only for the element
+  that was undefined.
+\item
+  \passthrough{\lstinline!D9-shallow-rest: 7 9!} showed the rest
+  object's nested property change also affected the source.
+  \textbf{Learning:} object rest is not a recursive copy.
+\item
+  \passthrough{\lstinline!tsc --noEmit!} initially reported
+  \passthrough{\lstinline!TS17008: JSX element 'article' has no corresponding closing tag!}
+  in \passthrough{\lstinline!ts/props.tsx!}; I added
+  \passthrough{\lstinline!</article>!}, then syntax parsing succeeded.
+  \textbf{Learning:} JSX tags must be balanced before meaningful
+  type-checking can proceed.
+\item
+  \passthrough{\lstinline!tsc -p tsconfig.offline.json!} passed with no
+  diagnostics for non-React TypeScript files. \textbf{Learning:} a
+  targeted compile is helpful but does not replace a complete project
+  check.
+\item
+  On GitHub Actions, the real \passthrough{\lstinline!npm install!},
+  \passthrough{\lstinline!npm run all!},
+  \passthrough{\lstinline!npm run check!}, and depth experiment
+  completed successfully. \textbf{Learning:} a reproducible clean runner
+  can validate the complete project even when the original machine has
+  DNS restrictions.
+\end{enumerate}
+
+\subsubsection{References}\label{references}
+
+\begin{itemize}
+\tightlist
+\item
+  ECMA-262, destructuring binding and assignment patterns:
+  https://tc39.es/ecma262/
+\item
+  MDN, destructuring assignment:
+  https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring
+\item
+  TypeScript handbook, object types and tuples:
+  https://www.typescriptlang.org/docs/handbook/2/objects.html
+\item
+  React documentation, passing props:
+  https://react.dev/learn/passing-props-to-a-component
+\item
+  Third-party example source: https://github.com/sindresorhus/p-limit
+\end{itemize}
+
+\end{document}
