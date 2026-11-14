@@ -1,0 +1,95 @@
+
+> destructuring-guide@0.0.0 all
+> npm run js && npm run ts
+
+
+> destructuring-guide@0.0.0 js
+> node js/arrays.mjs && node js/objects.mjs && node js/params.mjs && node js/pitfalls.mjs && tsx js/props.jsx
+
+F1: 62 91
+F2: workshop [ 'networking', 'closing' ]
+F3: B202 B101
+F4: unassigned A12
+F5: Deniz web
+F6: MIS233
+F7: TRY
+F8: MIS233 { attendee: 'Deniz', track: 'web', seat: 'C4', price: 250 }
+F9: 3 09:00
+F10: 250
+F11: Deniz / general | Guest / general
+F11-array: 4:9 0:0
+F12-object: pens 12
+F12-object: folders 3
+F12-map: North 2
+F12-map: South 4
+Pitfall1: undefined TypeError Cannot destructure property 'id' of 'input' as it is undefined.
+Pitfall1: null TypeError Cannot destructure property 'id' of 'input' as it is null.
+Pitfall2: {"a":"fallback","b":null}
+Pitfall3: new
+Pitfall3-error: SyntaxError Unexpected token '='
+Pitfall4: 5
+Pitfall5: A B A B
+P1-A: <section><h2>Schedule</h2>Friday</section>
+P1-B: <section><h2>Schedule</h2>Friday</section>
+P2-nested: <section><h2>Equivalent</h2>text</section>
+P2-attribute: <section><h2>Equivalent</h2>text</section>
+P3-string: <div>hello</div>
+P3-number: <div>17</div>
+P3-element: <div><strong>bold</strong></div>
+P3-several: <div><em>one</em><em>two</em></div>
+P3-undefined: <div></div>
+P3-null: <div></div>
+P3-false: <div></div>
+P3-function-called: <div><strong>called</strong></div>
+P3-function-uninvoked: <div></div>
+P4-explicit-last: <section data-role="explicit" id="desk"><h3>Desk</h3>A</section>
+P4-spread-last: <section data-role="incoming" id="desk"><h3>Desk</h3>A</section>
+P5-slots: <article><header><b>Plan</b></header><main>Body</main><footer><small>End</small></footer></article>
+P5-flow: <article><header><b>Plan</b></header><main>Body</main><footer><small>End</small></footer></article>
+P6-undefined: <span>Pending</span>
+P6-null: <span>(empty)</span>
+
+> destructuring-guide@0.0.0 ts
+> tsx ts/arrays.ts && tsx ts/objects.ts && tsx ts/params.ts && tsx ts/types.ts && tsx ts/props.tsx
+
+F1: 62 91
+F2: workshop [ 'networking', 'closing' ]
+F3: B202 B101
+F4: unassigned A12
+F5: Deniz web
+F6: MIS233
+F7: TRY
+F8: MIS233 { attendee: 'Deniz', track: 'web', seat: 'C4', price: 250 }
+F9: 3 09:00
+F10: 250
+F11: Deniz / general | Guest / general
+F11-array: 4:9 0:0
+F12-object: pens 12
+F12-object: folders 3
+F12-map: North 2
+F12-map: South 4
+T1: North
+T2: 42 confirmed 3 rooms
+T3: no attendees
+T4: tr null
+T5: 8 number
+Bonus-types: 7 [ 'ready', true ]
+P1-A: <section><h2>Schedule</h2>Friday</section>
+P1-B: <section><h2>Schedule</h2>Friday</section>
+P2-nested: <section><h2>Equivalent</h2>text</section>
+P2-attribute: <section><h2>Equivalent</h2>text</section>
+P3-string: <div>hello</div>
+P3-number: <div>17</div>
+P3-element: <div><strong>bold</strong></div>
+P3-several: <div><em>one</em><em>two</em></div>
+P3-undefined: <div></div>
+P3-null: <div></div>
+P3-false: <div></div>
+P3-function-called: <div><strong>called</strong></div>
+P4-explicit-last: <section data-role="explicit" id="desk"><h3>Desk</h3>A</section>
+P4-spread-last: <section data-role="incoming" id="desk"><h3>Desk</h3>A</section>
+P5-slots: <article><header><b>Plan</b></header><main>Body</main><footer><small>End</small></footer></article>
+P5-flow: <article><header><b>Plan</b></header><main>Body</main><footer><small>End</small></footer></article>
+P6-undefined: <span>Pending</span>
+P6-null: <span>(empty)</span>
+P7-button: <button type="button" disabled="" class="primary">Save</button>

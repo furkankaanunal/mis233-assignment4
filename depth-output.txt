@@ -1,0 +1,9 @@
+D1-string: M I
+D2-set: web [ 'finance' ]
+D3-generator: A1 C3
+D4-lazy-default: given computed 1
+D5-earlier-binding: 3 6
+D6-catch: registration closed
+D7-target: { x: 5, y: 9 }
+D8-map-entry: East 4
+D9-shallow-rest: 7 9

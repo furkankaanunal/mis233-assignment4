@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {"types": [], "typeRoots": ["./offline-types"]},
+  "include": ["ts/arrays.ts", "ts/objects.ts", "ts/params.ts", "ts/types.ts"]
+}
