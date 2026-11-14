@@ -1,0 +1,34 @@
+name: Verify Assignment 4
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Restore checked-in assignment sources
+        run: base64 --decode source-bootstrap.tar.xz.b64 | tar -xJf -
+      - name: Install actual npm dependencies
+        run: npm install --no-audit --no-fund
+      - name: Run every JavaScript and TypeScript example
+        run: npm run all | tee output.txt
+      - name: Strict TypeScript type-check
+        run: npm run check
+      - name: Depth experiments
+        run: node js/depth.mjs | tee depth-output.txt
+      - name: Commit tested source and captured real output
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .gitignore js ts package.json package-lock.json tsconfig.json tsconfig.offline.json output.txt depth-output.txt
+          if ! git diff --cached --quiet; then
+            git commit -m "Publish npm-tested assignment source and output"
+            git push origin HEAD:main
+          fi
