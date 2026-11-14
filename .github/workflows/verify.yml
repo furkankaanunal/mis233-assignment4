@@ -4,7 +4,7 @@ on:
     branches: [main]
   workflow_dispatch:
 permissions:
-  contents: write
+  contents: read
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -13,22 +13,16 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Restore checked-in assignment sources
-        run: base64 --decode source-bootstrap.tar.xz.b64 | tar -xJf -
-      - name: Install actual npm dependencies
-        run: npm install --no-audit --no-fund
-      - name: Run every JavaScript and TypeScript example
-        run: npm run all | tee output.txt
-      - name: Strict TypeScript type-check
+          cache: npm
+      - name: Reproducible clean install
+        run: npm ci --no-audit --no-fund
+      - name: Run all JavaScript, TypeScript and React examples
+        run: npm run all > output.ci.txt
+      - name: Verify output matches the captured submitted output
+        run: diff -u output.txt output.ci.txt
+      - name: Type-check strict TypeScript
         run: npm run check
-      - name: Depth experiments
-        run: node js/depth.mjs | tee depth-output.txt
-      - name: Commit tested source and captured real output
+      - name: Execute and compare additional experiments
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add .gitignore js ts package.json package-lock.json tsconfig.json tsconfig.offline.json output.txt depth-output.txt
-          if ! git diff --cached --quiet; then
-            git commit -m "Publish npm-tested assignment source and output"
-            git push origin HEAD:main
-          fi
+          node js/depth.mjs > depth.ci.txt
+          diff -u depth-output.txt depth.ci.txt
